@@ -36,7 +36,7 @@ public class HelloClient {
                             .build());
             System.out.println("Request #1: Success: " + response.getMessage());
         } catch (StatusRuntimeException e) {
-            System.out.println("Request #2: Error: " + e.getMessage());
+            System.out.println("Request #1: Error: " + e.getMessage());
         }
 
         // In this example, we don't give our name and the service responds with an error.
