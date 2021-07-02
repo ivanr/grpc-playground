@@ -1,0 +1,83 @@
+
+plugins {
+
+    // https://docs.gradle.org/current/userguide/application_plugin.html
+    id 'application'
+
+    // https://plugins.gradle.org/plugin/com.google.protobuf
+    // https://github.com/google/protobuf-gradle-plugin
+    id 'com.google.protobuf' version '0.8.16'
+
+    // https://docs.gradle.org/current/userguide/idea_plugin.html
+    id 'idea'
+}
+
+application {
+    mainClass = 'playground.grpc.HelloMain'
+}
+
+repositories {
+    mavenCentral()
+}
+
+def grpcVersion = '1.39.0'
+def protobufVersion = '3.17.2'
+def protocVersion = protobufVersion
+
+dependencies {
+
+    // Core gRPC libraries.
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+
+    // Fix to make annotations work; see https://github.com/grpc/grpc-java/issues/6833
+    compileOnly "org.apache.tomcat:annotations-api:6.0.53"
+
+    // Various protobuf utilities, including marshalling to and from JSON.
+    implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
+
+    // Netty is used to run the gRPC server. This version relies on Java's TLS stack.
+    runtimeOnly "io.grpc:grpc-netty:${grpcVersion}"
+
+    // Shaded Netty includes a TLS stack based on BoringSSL, but it's heavier (7 MB versus 300 KB).
+    // runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
+
+    /*
+    // https://grpc.io/blog/graceful-cleanup-junit-tests/
+    // https://grpc.github.io/grpc-java/javadoc/index.html?io/grpc/testing/package-summary.html
+    testImplementation "io.grpc:grpc-testing:${grpcVersion}"
+
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "org.mockito:mockito-core:3.11.12"
+    */
+}
+
+protobuf {
+
+    // Where the generated files will be placed. This is also the default
+    // location, but using explicit documentation as a way of documentation.
+    generatedFilesBaseDir = "$buildDir/generated/source/proto"
+
+    protoc {
+        // Use the precompiled protoc from Maven Central.
+        artifact = "com.google.protobuf:protoc:${protocVersion}"
+    }
+
+    plugins {
+        grpc {
+            // Use the gRPC codegen plugin from Maven Central.
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+        }
+    }
+
+    // Applies the above plugins.
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+
+clean {
+    delete protobuf.generatedFilesBaseDir
+}
