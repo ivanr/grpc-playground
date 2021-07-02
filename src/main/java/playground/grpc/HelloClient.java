@@ -8,8 +8,7 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CompletableFuture;
 
 public class HelloClient {
 
@@ -71,7 +70,7 @@ public class HelloClient {
                         for (BadRequest.FieldViolation fv : br.getFieldViolationsList()) {
                             System.out.println("Violation: " + fv.getField() + ": " + fv.getDescription());
                         }
-                    } catch (InvalidProtocolBufferException ipbe) {
+                    } catch (InvalidProtocolBufferException ex) {
                         // TODO Shouldn't happen but log if it does.
                     }
                 }
@@ -80,33 +79,43 @@ public class HelloClient {
     }
 
     private void successfulAsyncRequest() throws Exception {
-        final CountDownLatch finishLatch = new CountDownLatch(1);
-
         HelloRequest request = HelloRequest.newBuilder()
-                .setName("Ivan")
+                //.setName("Ivan")
                 .build();
+
+        // Asynchronous gRPC requested implemented as a CompletableFuture. It
+        // doesn't quite make sense because this function returns only a
+        // single response, but the same approach could be used with more
+        // complex streaming functions.
+
+        CompletableFuture<HelloResponse> future = new CompletableFuture<>();
 
         asyncStub.sayHello(request, new StreamObserver<HelloResponse>() {
 
+            private HelloResponse response;
+
             @Override
             public void onNext(HelloResponse response) {
-                System.out.println("Request #3: Success: " + response.getMessage());
+                this.response = response;
             }
 
             @Override
             public void onError(Throwable t) {
-                System.out.println("Request #3: Error: " + t.getMessage());
-                finishLatch.countDown();
+                future.completeExceptionally(t);
             }
 
             @Override
             public void onCompleted() {
-                System.out.println("Request #3: Completed.");
-                finishLatch.countDown();
+                future.complete(response);
             }
         });
 
-        finishLatch.await(1, TimeUnit.MINUTES);
+        try {
+            HelloResponse response = future.get();
+            System.out.println("Request #3: Success: " + response.getMessage());
+        } catch (Exception e) {
+            System.out.println("Request #3: Error: " + e.getMessage());
+        }
     }
 
     public static void main(String[] args) throws Exception {
