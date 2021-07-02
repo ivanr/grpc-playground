@@ -6,16 +6,16 @@ import io.grpc.ServerBuilder;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class HelloMain {
+public class HelloServer {
+
+    public static final int SERVER_PORT = 50051;
 
     private Server server;
 
     private void start() throws IOException {
 
-        int port = 50051;
-
-        server = ServerBuilder.forPort(port)
-                .addService(new HelloImpl())
+        server = ServerBuilder.forPort(SERVER_PORT)
+                .addService(new HelloServerImpl())
                 .build()
                 .start();
 
@@ -23,7 +23,7 @@ public class HelloMain {
             @Override
             public void run() {
                 try {
-                    HelloMain.this.stop();
+                    HelloServer.this.stop();
                 } catch (InterruptedException e) {
                     e.printStackTrace(System.err);
                 }
@@ -44,7 +44,7 @@ public class HelloMain {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        final HelloMain server = new HelloMain();
+        final HelloServer server = new HelloServer();
         System.out.println("Starting server...");
         server.start();
         server.blockUntilShutdown();

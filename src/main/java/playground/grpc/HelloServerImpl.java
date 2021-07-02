@@ -7,7 +7,7 @@ import com.google.rpc.Status;
 import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.StreamObserver;
 
-public class HelloImpl extends HelloGrpc.HelloImplBase {
+public class HelloServerImpl extends HelloGrpc.HelloImplBase {
 
     @Override
     public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
@@ -34,7 +34,7 @@ public class HelloImpl extends HelloGrpc.HelloImplBase {
 
             // When gRPC is used with protocol buffers, there is an extension
             // that supports a richer error model. The codes are the same, but
-            // with this approach supports attaching a detail object.
+            // with this approach supports attaching one or more additional objects.
             // https://cloud.google.com/apis/design/errors#error_model
             //
             // The code values in io.grpc.Status and com.google.rpc.Code are the same.

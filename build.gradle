@@ -13,7 +13,7 @@ plugins {
 }
 
 application {
-    mainClass = 'playground.grpc.HelloMain'
+    mainClass = 'playground.grpc.HelloServer'
 }
 
 repositories {
