@@ -43,7 +43,7 @@ public class HelloClient {
         try {
             HelloResponse response = blockingStub.sayHello(
                     HelloRequest.newBuilder()
-                            // .setName("Ivan")
+                            // Intentionally not providing a name to force an error.
                             .build());
             System.out.println("Request #2: Success: " + response.getMessage());
         } catch (StatusRuntimeException e) {
