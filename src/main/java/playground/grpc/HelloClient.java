@@ -6,6 +6,10 @@ import com.google.rpc.BadRequest;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class HelloClient {
 
@@ -75,9 +79,43 @@ public class HelloClient {
         }
     }
 
+    private void successfulAsyncRequest() throws Exception {
+        final CountDownLatch finishLatch = new CountDownLatch(1);
+
+        HelloRequest request = HelloRequest.newBuilder()
+                .setName("Ivan")
+                .build();
+
+        asyncStub.sayHello(request, new StreamObserver<HelloResponse>() {
+
+            @Override
+            public void onNext(HelloResponse response) {
+                System.out.println("Request #3: Success: " + response.getMessage());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                System.out.println("Request #3: Error: " + t.getMessage());
+                finishLatch.countDown();
+            }
+
+            @Override
+            public void onCompleted() {
+                System.out.println("Request #3: Completed.");
+                finishLatch.countDown();
+            }
+        });
+
+        finishLatch.await(1, TimeUnit.MINUTES);
+    }
+
     public static void main(String[] args) throws Exception {
         HelloClient client = new HelloClient("localhost", HelloServer.SERVER_PORT);
+
         client.successfulBlockingRequest();
+
         client.failedBlockingRequest();
+
+        client.successfulAsyncRequest();
     }
 }
