@@ -2,19 +2,34 @@ package playground.grpc;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class HelloServer {
 
-    public static final int SERVER_PORT = 50051;
+
 
     private Server server;
 
-    private void start() throws IOException {
+    private void start(String[] args) throws IOException {
+        HelloServerOptions opts = new HelloServerOptions();
+        CmdLineParser parser = new CmdLineParser(opts);
 
-        server = ServerBuilder.forPort(SERVER_PORT)
+        try {
+            parser.parseArgument(args);
+        } catch (CmdLineException e) {
+            System.err.println(e.getMessage());
+            System.err.println("HelloServer [options...] arguments...");
+            parser.printUsage(System.err);
+            System.err.println();
+        }
+
+        System.out.println("Starting server...");
+
+        server = ServerBuilder.forPort(opts.getPort())
                 .addService(new HelloServerImpl())
                 .build()
                 .start();
@@ -45,8 +60,7 @@ public class HelloServer {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         final HelloServer server = new HelloServer();
-        System.out.println("Starting server...");
-        server.start();
+        server.start(args);
         server.blockUntilShutdown();
     }
 }

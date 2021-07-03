@@ -119,7 +119,7 @@ public class HelloClient {
     }
 
     public static void main(String[] args) throws Exception {
-        HelloClient client = new HelloClient("localhost", HelloServer.SERVER_PORT);
+        HelloClient client = new HelloClient("localhost", HelloServerOptions.DEFAULT_SERVER_PORT);
 
         client.successfulBlockingRequest();
 

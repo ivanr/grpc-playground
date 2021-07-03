@@ -10,6 +10,9 @@ plugins {
 
     // https://docs.gradle.org/current/userguide/idea_plugin.html
     id 'idea'
+
+    // https://plugins.gradle.org/plugin/io.freefair.lombok
+    id "io.freefair.lombok" version "6.0.0-m2"
 }
 
 application {
@@ -41,6 +44,9 @@ dependencies {
 
     // Shaded Netty includes a TLS stack based on BoringSSL, but it's heavier (7 MB versus 300 KB).
     // runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
+
+    // https://mvnrepository.com/artifact/args4j/args4j
+    implementation group: 'args4j', name: 'args4j', version: '2.33'
 
     /*
     // https://grpc.io/blog/graceful-cleanup-junit-tests/
