@@ -143,7 +143,7 @@ public class HelloClient {
         }
     }
 
-    // This call fails because of an extremely short deadline.
+    // This call fails because of a short deadline.
     private void failedDeadlineExceeded() {
         try {
             HelloResponse response = blockingStub
