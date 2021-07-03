@@ -6,6 +6,7 @@ import com.google.rpc.Code;
 import com.google.rpc.Status;
 import io.grpc.Context;
 import io.grpc.protobuf.StatusProto;
+import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 
 public class HelloServerImpl extends HelloGrpc.HelloImplBase {
@@ -64,7 +65,25 @@ public class HelloServerImpl extends HelloGrpc.HelloImplBase {
                 .setMessage("Hello " + request.getName() + ".")
                 .build();
 
+        // In the following block we simulate slow operation and exceed
+        // the deadline set by the client. The idea is to show how the
+        // server can detect cancellation.
         if (request.getName().equals("Slow")) {
+
+            // There are several ways to handle cancellation. For example, you could
+            // call ServerCallStreamObserver#isCancelled or register a callback with
+            // ServerCallStreamObserver#setOnCancelHandler.
+
+            ServerCallStreamObserver serverCallStreamObserver = (ServerCallStreamObserver) responseObserver;
+            serverCallStreamObserver.setOnCancelHandler(new Runnable() {
+                @Override
+                public void run() {
+                    System.err.println("Received cancellation");
+                }
+            });
+
+            // Simulate long operation in a loop.
+
             for (; ; ) {
                 try {
                     Thread.currentThread().sleep(10);
@@ -74,6 +93,18 @@ public class HelloServerImpl extends HelloGrpc.HelloImplBase {
                             .asRuntimeException());
                     return;
                 }
+
+                // Depending on how the work is structured, it may also
+                // make sense to check the thread's interrupted flag.
+
+                if (Thread.currentThread().isInterrupted()) {
+                    responseObserver.onError(io.grpc.Status.CANCELLED
+                            .withDescription("Cancelled (interrupted)")
+                            .asRuntimeException());
+                    return;
+                }
+
+                // The other way to check for cancellation is to use Context#isCancelled.
 
                 if (Context.current().isCancelled()) {
                     responseObserver.onError(io.grpc.Status.CANCELLED
