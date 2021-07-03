@@ -12,8 +12,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class HelloServer {
-
-
+    
     private Server server;
 
     private void start(String[] args) throws IOException {

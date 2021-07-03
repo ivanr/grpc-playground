@@ -3,13 +3,11 @@ package playground.grpc;
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.rpc.BadRequest;
-import io.grpc.Grpc;
-import io.grpc.ManagedChannel;
-import io.grpc.StatusRuntimeException;
-import io.grpc.TlsChannelCredentials;
+import io.grpc.*;
 import io.grpc.stub.StreamObserver;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class HelloClient {
 
@@ -39,11 +37,17 @@ public class HelloClient {
 
         BasicAuthCallCredentials callCredentials = new BasicAuthCallCredentials("admin", "123456");
 
+        // Create stubs with authentication and deadlines. Client should always
+        // specify deadlines, otherwise something may go wrong and the calls
+        // will take forever.
+
         this.blockingStub = HelloGrpc.newBlockingStub(channel)
-                .withCallCredentials(callCredentials);
+                .withCallCredentials(callCredentials)
+                .withDeadlineAfter(1000, TimeUnit.MILLISECONDS);
 
         this.asyncStub = HelloGrpc.newStub(channel)
-                .withCallCredentials(callCredentials);
+                .withCallCredentials(callCredentials)
+                .withDeadlineAfter(1000, TimeUnit.MILLISECONDS);
     }
 
     // Example of a blocking invocation and a successful response.
@@ -137,6 +141,22 @@ public class HelloClient {
         }
     }
 
+    // This call fails because of an extremely short deadline.
+    private void failedDeadlineExceeded() {
+        try {
+            HelloResponse response = blockingStub
+                    .withDeadlineAfter(1, TimeUnit.MICROSECONDS)
+                    .sayHello(
+                            HelloRequest.newBuilder()
+                                    .setName("Slow")
+                                    .build());
+            System.out.println("Request #4: Success: " + response.getMessage());
+        } catch (StatusRuntimeException e) {
+            System.out.println("Request #4: Error: " + e.getMessage());
+            e.printStackTrace(System.err);
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         HelloClient client = new HelloClient("localhost", HelloServerOptions.DEFAULT_SERVER_PORT);
 
@@ -145,5 +165,7 @@ public class HelloClient {
         client.failedBlockingRequest();
 
         client.successfulAsyncRequest();
+
+        client.failedDeadlineExceeded();
     }
 }
