@@ -52,6 +52,14 @@ public class HelloClient {
                 .withDeadlineAfter(1000, TimeUnit.MILLISECONDS);
     }
 
+    public HelloClient(ManagedChannel channel) throws Exception {
+        this.channel = channel;
+        this.blockingStub = HelloGrpc.newBlockingStub(channel)
+                .withDeadlineAfter(1000, TimeUnit.MILLISECONDS);
+        this.asyncStub = HelloGrpc.newStub(channel)
+                .withDeadlineAfter(1000, TimeUnit.MILLISECONDS);
+    }
+
     // Example of a blocking invocation and a successful response.
     private void successfulBlockingRequest() {
         try {

@@ -48,14 +48,10 @@ dependencies {
     // https://mvnrepository.com/artifact/args4j/args4j
     implementation group: 'args4j', name: 'args4j', version: '2.33'
 
-    /*
-    // https://grpc.io/blog/graceful-cleanup-junit-tests/
-    // https://grpc.github.io/grpc-java/javadoc/index.html?io/grpc/testing/package-summary.html
-    testImplementation "io.grpc:grpc-testing:${grpcVersion}"
 
+    // Testing.
+    testImplementation "io.grpc:grpc-testing:${grpcVersion}"
     testImplementation "junit:junit:4.13.2"
-    testImplementation "org.mockito:mockito-core:3.11.12"
-    */
 }
 
 protobuf {
