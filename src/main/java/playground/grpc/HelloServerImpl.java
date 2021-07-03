@@ -73,7 +73,7 @@ public class HelloServerImpl extends HelloGrpc.HelloImplBase {
         }
 
         HelloResponse response = HelloResponse.newBuilder()
-                .setMessage("Hello " + request.getName() + ".")
+                .setGreeting("Hello " + request.getName() + ".")
                 .build();
 
         // In the following block we simulate slow operation and exceed

@@ -59,7 +59,7 @@ public class HelloClient {
                     HelloRequest.newBuilder()
                             .setName("Ivan")
                             .build());
-            System.out.println("Request #1: Success: " + response.getMessage());
+            System.out.println("Request #1: Success: " + response.getGreeting());
         } catch (StatusRuntimeException e) {
             System.out.println("Request #1: Error: " + e.getMessage());
             e.printStackTrace(System.err);
@@ -73,7 +73,7 @@ public class HelloClient {
                     HelloRequest.newBuilder()
                             // Intentionally not providing a name to force an error.
                             .build());
-            System.out.println("Request #2: Success: " + response.getMessage());
+            System.out.println("Request #2: Success: " + response.getGreeting());
         } catch (StatusRuntimeException e) {
             System.out.println("Request #2: Error: " + e.getMessage());
 
@@ -137,7 +137,7 @@ public class HelloClient {
 
         try {
             HelloResponse response = future.get();
-            System.out.println("Request #3: Success: " + response.getMessage());
+            System.out.println("Request #3: Success: " + response.getGreeting());
         } catch (Exception e) {
             System.out.println("Request #3: Error: " + e.getMessage());
         }
@@ -161,7 +161,7 @@ public class HelloClient {
                             HelloRequest.newBuilder()
                                     .setName("Slow")
                                     .build());
-            System.out.println("Request #4: Success: " + response.getMessage());
+            System.out.println("Request #4: Success: " + response.getGreeting());
         } catch (StatusRuntimeException e) {
             System.out.println("Request #4: Error: " + e.getMessage());
             e.printStackTrace(System.err);
