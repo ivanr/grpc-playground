@@ -5,6 +5,7 @@ import com.google.rpc.BadRequest;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
 import io.grpc.Context;
+import io.grpc.Deadline;
 import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
@@ -60,6 +61,16 @@ public class HelloServerImpl extends HelloGrpc.HelloImplBase {
         }
 
         // It seems that we have a name. Say hello back.
+
+        // We can determine if a deadline is set on the request. We don't really
+        // need to, as the gRPC library will automatically cancel if the allocated
+        // time expires. Similarly, the library will propagate the deadline if
+        // we make further gRPC calls from here.
+
+        Deadline deadline = Context.current().getDeadline();
+        if (deadline != null) {
+            System.err.println("Request deadline: " + deadline);
+        }
 
         HelloResponse response = HelloResponse.newBuilder()
                 .setMessage("Hello " + request.getName() + ".")
