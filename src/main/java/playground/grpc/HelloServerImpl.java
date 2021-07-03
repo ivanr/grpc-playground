@@ -68,17 +68,18 @@ public class HelloServerImpl extends HelloGrpc.HelloImplBase {
         // In the following block we simulate slow operation and exceed
         // the deadline set by the client. The idea is to show how the
         // server can detect cancellation.
+
         if (request.getName().equals("Slow")) {
 
             // There are several ways to handle cancellation. For example, you could
             // call ServerCallStreamObserver#isCancelled or register a callback with
-            // ServerCallStreamObserver#setOnCancelHandler.
+            // ServerCallStreamObserver#setOnCancelHandler (as below).
 
             ServerCallStreamObserver serverCallStreamObserver = (ServerCallStreamObserver) responseObserver;
             serverCallStreamObserver.setOnCancelHandler(new Runnable() {
                 @Override
                 public void run() {
-                    System.err.println("Received cancellation");
+                    System.err.println("Request cancelled");
                 }
             });
 
