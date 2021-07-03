@@ -1,7 +1,8 @@
 package playground.grpc;
 
+import io.grpc.Grpc;
 import io.grpc.Server;
-import io.grpc.ServerBuilder;
+import io.grpc.TlsServerCredentials;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
@@ -29,21 +30,30 @@ public class HelloServer {
 
         System.out.println("Starting server...");
 
-        ServerBuilder builder = ServerBuilder.forPort(opts.getPort());
+        TlsServerCredentials.Builder tlsBuilder = TlsServerCredentials.newBuilder();
+
+        tlsBuilder.clientAuth(TlsServerCredentials.ClientAuth.REQUIRE);
+
+        if (opts.getCaCert() != null) {
+            tlsBuilder.trustManager(new File(opts.getCaCert()));
+        } else {
+            tlsBuilder.trustManager(this.getClass().getResourceAsStream("ca.pem"));
+        }
 
         if ((opts.getTlsCerts() != null) && (opts.getTlsKey() != null)) {
             System.out.println("Using TLS with the supplied certificate");
-            builder.useTransportSecurity(
+            tlsBuilder.keyManager(
                     new File(opts.getTlsCerts()),
                     new File(opts.getTlsKey()));
         } else {
             System.out.println("Using TLS with a self-signed certificate");
-            builder.useTransportSecurity(
+            tlsBuilder.keyManager(
                     this.getClass().getResourceAsStream("localhost.pem"),
                     this.getClass().getResourceAsStream("localhost.key.pem"));
         }
 
-        server = builder.addService(new HelloServerImpl())
+        server = Grpc.newServerBuilderForPort(opts.getPort(), tlsBuilder.build())
+                .addService(new HelloServerImpl())
                 .build().start();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {

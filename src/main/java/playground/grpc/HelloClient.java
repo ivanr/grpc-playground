@@ -3,14 +3,12 @@ package playground.grpc;
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.rpc.BadRequest;
+import io.grpc.Grpc;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
-import io.grpc.netty.GrpcSslContexts;
-import io.grpc.netty.NettyChannelBuilder;
+import io.grpc.TlsChannelCredentials;
 import io.grpc.stub.StreamObserver;
 
-import javax.net.ssl.SSLException;
 import java.util.concurrent.CompletableFuture;
 
 public class HelloClient {
@@ -21,16 +19,24 @@ public class HelloClient {
 
     private final HelloGrpc.HelloStub asyncStub;
 
-    public HelloClient(String host, int port) throws SSLException {
-        // Use TLS, but trust the private CA from which
-        // the server's certificate has been issued.
-        this(NettyChannelBuilder.forAddress(host, port)
-                .sslContext(GrpcSslContexts.forClient().trustManager(
-                        HelloClient.class.getResourceAsStream("ca.pem")).build()));
-    }
+    public HelloClient(String host, int port) throws Exception {
+        // Configure TLS using mutual authentication. To authenticate
+        // the server we install a custom trust manager that uses a
+        // private CA. To authenticate to the server, we use a client certificate.
 
-    public HelloClient(ManagedChannelBuilder<?> channelBuilder) {
-        this.channel = channelBuilder.build();
+        TlsChannelCredentials.Builder tlsBuilder = TlsChannelCredentials.newBuilder();
+        tlsBuilder.keyManager(
+                HelloClient.class.getResourceAsStream("client.pem"),
+                HelloClient.class.getResourceAsStream("client.key.pem"));
+        tlsBuilder.trustManager(HelloClient.class.getResourceAsStream("ca.pem"));
+
+        this.channel = Grpc.newChannelBuilderForAddress(host, port, tlsBuilder.build())
+                // The server certificate is valid for 'localhost' and so that's fine
+                // but in a development environment it something might be useful to
+                // relax server hostname validation as in the example below.
+                //.overrideAuthority("example.com")
+                .build();
+
         this.blockingStub = HelloGrpc.newBlockingStub(channel);
         this.asyncStub = HelloGrpc.newStub(channel);
     }

@@ -11,6 +11,9 @@ public class HelloServerOptions {
     @Option(name = "--port")
     int port = DEFAULT_SERVER_PORT;
 
+    @Option(name = "--ca-cert")
+    String caCert;
+
     @Option(name = "--tls-certs")
     String tlsCerts;
 
