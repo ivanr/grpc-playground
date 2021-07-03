@@ -4,6 +4,7 @@ import com.google.protobuf.Any;
 import com.google.rpc.BadRequest;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
+import io.grpc.Context;
 import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.StreamObserver;
 
@@ -62,6 +63,26 @@ public class HelloServerImpl extends HelloGrpc.HelloImplBase {
         HelloResponse response = HelloResponse.newBuilder()
                 .setMessage("Hello " + request.getName() + ".")
                 .build();
+
+        if (request.getName().equals("Slow")) {
+            for (; ; ) {
+                try {
+                    Thread.currentThread().sleep(10);
+                } catch (InterruptedException e) {
+                    responseObserver.onError(io.grpc.Status.CANCELLED
+                            .withDescription("Cancelled (interrupted)")
+                            .asRuntimeException());
+                    return;
+                }
+
+                if (Context.current().isCancelled()) {
+                    responseObserver.onError(io.grpc.Status.CANCELLED
+                            .withDescription("Cancelled (client)")
+                            .asRuntimeException());
+                    return;
+                }
+            }
+        }
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();

@@ -147,7 +147,7 @@ public class HelloClient {
     private void failedDeadlineExceeded() {
         try {
             HelloResponse response = blockingStub
-                    .withDeadlineAfter(1, TimeUnit.MICROSECONDS)
+                    .withDeadlineAfter(1_000, TimeUnit.MILLISECONDS)
                     .sayHello(
                             HelloRequest.newBuilder()
                                     .setName("Slow")
