@@ -90,6 +90,9 @@ public class HelloServerImpl extends HelloGrpc.HelloImplBase {
             serverCallStreamObserver.setOnCancelHandler(new Runnable() {
                 @Override
                 public void run() {
+                    // We don't do anything here in this example, but
+                    // in real life we could take an action that cancels
+                    // some work in progress.
                     System.err.println("Request cancelled");
                 }
             });

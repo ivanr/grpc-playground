@@ -145,6 +145,15 @@ public class HelloClient {
 
     // This call fails because of a short deadline.
     private void failedDeadlineExceeded() {
+
+        // In this example, we set a deadline, which then automatically
+        // cancels the request once exceeded.
+        //
+        // There are other ways for the client to cancel:
+        //   1. Blocking -- wrap call in a Context, call cancel on the context (possibly on a separate thread)
+        //   2. Async -- call RequestObserver#onError(Status.CANCELLED.asRuntimeException())
+        //   3. Future -- cancel the future
+
         try {
             HelloResponse response = blockingStub
                     .withDeadlineAfter(1_000, TimeUnit.MILLISECONDS)
@@ -169,5 +178,7 @@ public class HelloClient {
         client.successfulAsyncRequest();
 
         client.failedDeadlineExceeded();
+
+        // TODO Example with a future stub.
     }
 }
