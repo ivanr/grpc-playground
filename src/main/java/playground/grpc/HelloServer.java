@@ -32,12 +32,18 @@ public class HelloServer {
         ServerBuilder builder = ServerBuilder.forPort(opts.getPort());
 
         if ((opts.getTlsCerts() != null) && (opts.getTlsKey() != null)) {
+            System.out.println("Using TLS with the supplied certificate");
             builder.useTransportSecurity(
                     new File(opts.getTlsCerts()),
                     new File(opts.getTlsKey()));
+        } else {
+            System.out.println("Using TLS with a self-signed certificate");
+            builder.useTransportSecurity(
+                    this.getClass().getResourceAsStream("localhost.pem"),
+                    this.getClass().getResourceAsStream("localhost.key.pem"));
         }
 
-        builder.addService(new HelloServerImpl())
+        server = builder.addService(new HelloServerImpl())
                 .build().start();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {

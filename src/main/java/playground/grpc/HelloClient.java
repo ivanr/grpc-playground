@@ -6,8 +6,11 @@ import com.google.rpc.BadRequest;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.NettyChannelBuilder;
 import io.grpc.stub.StreamObserver;
 
+import javax.net.ssl.SSLException;
 import java.util.concurrent.CompletableFuture;
 
 public class HelloClient {
@@ -18,8 +21,12 @@ public class HelloClient {
 
     private final HelloGrpc.HelloStub asyncStub;
 
-    public HelloClient(String host, int port) {
-        this(ManagedChannelBuilder.forAddress(host, port).usePlaintext());
+    public HelloClient(String host, int port) throws SSLException {
+        // Use TLS, but trust the private CA from which
+        // the server's certificate has been issued.
+        this(NettyChannelBuilder.forAddress(host, port)
+                .sslContext(GrpcSslContexts.forClient().trustManager(
+                        HelloClient.class.getResourceAsStream("ca.pem")).build()));
     }
 
     public HelloClient(ManagedChannelBuilder<?> channelBuilder) {
@@ -38,6 +45,7 @@ public class HelloClient {
             System.out.println("Request #1: Success: " + response.getMessage());
         } catch (StatusRuntimeException e) {
             System.out.println("Request #1: Error: " + e.getMessage());
+            e.printStackTrace(System.err);
         }
     }
 
@@ -78,9 +86,9 @@ public class HelloClient {
         }
     }
 
-    private void successfulAsyncRequest() throws Exception {
+    private void successfulAsyncRequest() {
         HelloRequest request = HelloRequest.newBuilder()
-                //.setName("Ivan")
+                .setName("Ivan")
                 .build();
 
         // Asynchronous gRPC requested implemented as a CompletableFuture. It
