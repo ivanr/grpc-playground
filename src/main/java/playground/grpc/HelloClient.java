@@ -35,7 +35,9 @@ public class HelloClient {
                 //.overrideAuthority("example.com")
                 .build();
 
-        BasicAuthCallCredentials callCredentials = new BasicAuthCallCredentials("admin", "123456");
+        BasicAuthCallCredentials callCredentials = new BasicAuthCallCredentials(
+                HelloServerOptions.DEFAULT_USERNAME,
+                HelloServerOptions.DEFAULT_PASSWORD);
 
         // Create stubs with authentication and deadlines. Client should always
         // specify deadlines, otherwise something may go wrong and the calls

@@ -11,10 +11,6 @@ public class BasicAuthServerInterceptor implements ServerInterceptor {
     private static final ServerCall.Listener NOOP_LISTENER = new ServerCall.Listener() {
     };
 
-    private static final String HARDCODED_USERNAME = "admin";
-
-    private static final String HARDCODED_PASSWORD = "123456";
-
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
         String header = headers.get(Metadata.Key.of(BasicAuth.AUTH_HEADER_NAME, ASCII_STRING_MARSHALLER));
@@ -60,11 +56,11 @@ public class BasicAuthServerInterceptor implements ServerInterceptor {
             String username = tokens[0];
             String password = tokens[1];
 
-            if (!HARDCODED_USERNAME.equals(username)) {
+            if (!HelloServerOptions.DEFAULT_USERNAME.equals(username)) {
                 return null;
             }
 
-            if (!HARDCODED_PASSWORD.equals(password)) {
+            if (!HelloServerOptions.DEFAULT_PASSWORD.equals(password)) {
                 return null;
             }
 

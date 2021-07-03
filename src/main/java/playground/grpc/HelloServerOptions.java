@@ -8,6 +8,10 @@ public class HelloServerOptions {
 
     public static final int DEFAULT_SERVER_PORT = 50051;
 
+    public static final String DEFAULT_USERNAME = "admin";
+
+    public static final String DEFAULT_PASSWORD = "123456";
+
     @Option(name = "--port")
     int port = DEFAULT_SERVER_PORT;
 
