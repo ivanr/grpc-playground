@@ -5,11 +5,11 @@ import io.grpc.ServerBuilder;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class HelloServer {
-
 
 
     private Server server;
@@ -29,10 +29,16 @@ public class HelloServer {
 
         System.out.println("Starting server...");
 
-        server = ServerBuilder.forPort(opts.getPort())
-                .addService(new HelloServerImpl())
-                .build()
-                .start();
+        ServerBuilder builder = ServerBuilder.forPort(opts.getPort());
+
+        if ((opts.getTlsCerts() != null) && (opts.getTlsKey() != null)) {
+            builder.useTransportSecurity(
+                    new File(opts.getTlsCerts()),
+                    new File(opts.getTlsKey()));
+        }
+
+        builder.addService(new HelloServerImpl())
+                .build().start();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override

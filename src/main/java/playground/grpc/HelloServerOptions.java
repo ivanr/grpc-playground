@@ -8,6 +8,12 @@ public class HelloServerOptions {
 
     public static final int DEFAULT_SERVER_PORT = 50051;
 
-    @Option(name = "-p")
+    @Option(name = "--port")
     int port = DEFAULT_SERVER_PORT;
+
+    @Option(name = "--tls-certs")
+    String tlsCerts;
+
+    @Option(name = "--tls-key")
+    String tlsKey;
 }
