@@ -2,6 +2,7 @@ package playground.grpc;
 
 import io.grpc.Grpc;
 import io.grpc.Server;
+import io.grpc.ServerInterceptors;
 import io.grpc.TlsServerCredentials;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -53,7 +54,10 @@ public class HelloServer {
         }
 
         server = Grpc.newServerBuilderForPort(opts.getPort(), tlsBuilder.build())
-                .addService(new HelloServerImpl())
+                // Add the service with basic authentication via interceptor.
+                .addService(ServerInterceptors.intercept(
+                        new HelloServerImpl(),
+                        new BasicAuthServerInterceptor()))
                 .build().start();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {

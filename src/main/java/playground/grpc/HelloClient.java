@@ -37,8 +37,13 @@ public class HelloClient {
                 //.overrideAuthority("example.com")
                 .build();
 
-        this.blockingStub = HelloGrpc.newBlockingStub(channel);
-        this.asyncStub = HelloGrpc.newStub(channel);
+        BasicAuthCallCredentials callCredentials = new BasicAuthCallCredentials("admin", "123456");
+
+        this.blockingStub = HelloGrpc.newBlockingStub(channel)
+                .withCallCredentials(callCredentials);
+
+        this.asyncStub = HelloGrpc.newStub(channel)
+                .withCallCredentials(callCredentials);
     }
 
     // Example of a blocking invocation and a successful response.
