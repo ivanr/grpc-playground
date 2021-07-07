@@ -6,4 +6,4 @@ in one place everything you need to get up and running quickly.
 Java only.
 
 The best way to use this repo is to study the code and the comments.
-Additionally, take a look at LINKS.md for documentation and references.
+Additionally, take a look at [LINKS.md](LINKS.md) for documentation and references.

@@ -117,7 +117,7 @@ https://github.com/akalini/grpcbridge In-process HTTP/JSON bridge for Java
   - https://cloud.google.com/apis/design/errors#error_model
   - https://github.com/grpc/grpc-java/blob/master/examples/src/main/java/io/grpc/examples/errorhandling/DetailErrorSample.java
   - https://github.com/uw-labs/bloomrpc "The missing GUI Client for GRPC services."
-  - https://github.com/testinggospels/camouflage
+- https://github.com/testinggospels/camouflage
 - https://github.com/Fadelis/grpcmock
 - https://github.com/tokopedia/gripmock
 - https://retroryan8080.gitlab.io/grpc-java-workshop/index.html
