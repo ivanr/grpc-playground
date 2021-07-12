@@ -6,7 +6,7 @@ We wish to use protocol buffers for the following reasons:
 - The data is what matters, and we wish to put it centrestage. In other words, we wish to practice schema-led development.
 - It's a mature, popular, and widely used protocol.
 - Protocol buffers are language neutral, enabling interoperability no matter the language used for a component.
--Code generation from schemas reduces manual work.
+- Code generation from schemas reduces manual work.
 - We need a good way to maintain and evolve data formats, and using an external framework for that is a good approach.
 
 Additional requirements:
@@ -69,6 +69,8 @@ https://itnext.io/protobuf-and-null-support-1908a15311b6
 
 - Well-known types. In addition to the types in the core specification, Google defines a number of additional higher common data structures. For example, the built-in string cannot be null, but there is StringValue that can. There are types for all scalar values:
 https://developers.google.com/protocol-buffers/docs/reference/google.protobuf
+  
+- Common types (not embedded in protoc) https://github.com/googleapis/api-common-protos 
 
 - JSON interoperability
 https://developers.google.com/protocol-buffers/docs/reference/java/com/google/protobuf/util/JsonFormat
