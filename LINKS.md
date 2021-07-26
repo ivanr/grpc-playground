@@ -42,7 +42,10 @@ https://github.com/google/protobuf-gradle-plugin
 - Style guides:
   - Google' Style Guide
   - Uber's V1 Style Guide
-  - Uber's V2 Style Guide  
+  - Uber's V2 Style Guide
+- Schema management
+  - https://www.bugsnag.com/blog/libraries-for-grpc-services
+  - https://medium.com/namely-labs/how-we-build-grpc-services-at-namely-52a3ae9e7c35
 
 ## Protobuf Notes
 Two versions, beware. There are two versions of protocol buffers; the older v2 and the newer v3. We want to use the latter. In v3, there are no required fields (despite what the example on the homepage shows). At the time of writing, tutorials are available only for v2, so better to stick with the reference.
