@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "playground.protobuf";
+
+package playground.protobuf;
+
+import "google/protobuf/wrappers.proto";
+
+message Null {
+  Void void = 1;
+  string not_optional = 2;
+  optional string optional = 3;
+  google.protobuf.StringValue stringValue = 4;
+}
+
+message Void {}

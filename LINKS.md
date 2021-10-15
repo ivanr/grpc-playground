@@ -10,7 +10,7 @@ We wish to use protocol buffers for the following reasons:
 - We need a good way to maintain and evolve data formats, and using an external framework for that is a good approach.
 
 Additional requirements:
-- JSON interoperability; we need to define protobuf schemas, but sometimes keep data in JSON format, for example in Postgres, Elasticsearch, and expose via our public APIs
+- JSON interoperability; we need to define protobuf schemas, but sometimes keep data in JSON format, for example in Postgres, Elasticsearch, and expose via our public APIs. For this to work as expected, virtually all fields must be messages or optional.
 
 ## Protobuf Resources
 - Protocol Buffers homepage
@@ -50,12 +50,12 @@ https://github.com/google/protobuf-gradle-plugin
 ## Protobuf Notes
 Two versions, beware. There are two versions of protocol buffers; the older v2 and the newer v3. We want to use the latter. In v3, there are no required fields (despite what the example on the homepage shows). At the time of writing, tutorials are available only for v2, so better to stick with the reference.
 
-- Protobuf doesn't serialise NULL values
+- Protobuf doesn't serialise NULL values. It's not possible to set any field to null. You will never get a null field. Always check for presence. Nullable types have to be explicitly created with `oneof`.
 https://itnext.io/protobuf-and-null-support-1908a15311b6
 
 - Scalar fields have default values, which they take if the field is not in the message. This matches the behaviour of primitive values in many languages, but also makes interoperability with JSON tricky (such fields will not appear in JSON).
 
-- Optional fields are supported since 3.12 supports optional fields, but the feature is still behind an experimental flag. EDIT Released in 3.15.  This is how it's implemented behind the scenes:
+- Optional fields are supported since 3.15. The only difference is that optional fields can, like messages, be checked for presence. This is how it's implemented behind the scenes:
   ```
   message Foo {
     int32 bar = 1;
