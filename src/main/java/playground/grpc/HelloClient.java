@@ -3,8 +3,22 @@ package playground.grpc;
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.rpc.BadRequest;
-import io.grpc.*;
+import io.grpc.Grpc;
+import io.grpc.ManagedChannel;
+import io.grpc.StatusRuntimeException;
+import io.grpc.TlsChannelCredentials;
 import io.grpc.stub.StreamObserver;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.baggage.Baggage;
+import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.context.Scope;
+import io.opentelemetry.context.propagation.ContextPropagators;
+import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
+import io.opentelemetry.instrumentation.grpc.v1_6.GrpcTracing;
+import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +59,9 @@ public class HelloClient {
 
         this.blockingStub = HelloGrpc.newBlockingStub(channel)
                 .withCallCredentials(callCredentials)
-                .withDeadlineAfter(1000, TimeUnit.MILLISECONDS);
+                .withDeadlineAfter(1000, TimeUnit.MILLISECONDS)
+                .withInterceptors(GrpcTracing.newBuilder(GlobalOpenTelemetry.get()).build()
+                        .newClientInterceptor());
 
         this.asyncStub = HelloGrpc.newStub(channel)
                 .withCallCredentials(callCredentials)
@@ -177,9 +193,30 @@ public class HelloClient {
     }
 
     public static void main(String[] args) throws Exception {
+        SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
+                .addSpanProcessor(BatchSpanProcessor.builder(OtlpGrpcSpanExporter.builder().build())
+                        .setMaxExportBatchSize(1)
+                        .setMaxQueueSize(1)
+                        .build())
+                .build();
+
+        OpenTelemetrySdk.builder()
+                .setTracerProvider(sdkTracerProvider)
+                .setPropagators(ContextPropagators.create(W3CBaggagePropagator.getInstance()))
+                .buildAndRegisterGlobal();
+
         HelloClient client = new HelloClient("localhost", HelloServerOptions.DEFAULT_SERVER_PORT);
 
-        client.successfulBlockingRequest();
+        Span span = GlobalOpenTelemetry.getTracer("my tracer")
+                .spanBuilder("my span")
+                .startSpan();
+
+        try (Scope scope = span.makeCurrent()) {
+            Baggage.current().toBuilder().put("BAGGAGE_TEST", "AAA").build().makeCurrent();
+            client.successfulBlockingRequest();
+        } finally {
+            span.end();
+        }
 
         client.failedBlockingRequest();
 

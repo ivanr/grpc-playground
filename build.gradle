@@ -48,6 +48,14 @@ dependencies {
     // https://mvnrepository.com/artifact/args4j/args4j
     implementation group: 'args4j', name: 'args4j', version: '2.33'
 
+    // https://mvnrepository.com/artifact/io.opentelemetry/opentelemetry-sdk
+    implementation group: 'io.opentelemetry', name: 'opentelemetry-sdk', version: '1.7.1'
+
+    // https://mvnrepository.com/artifact/io.opentelemetry/opentelemetry-exporter-otlp
+    implementation group: 'io.opentelemetry', name: 'opentelemetry-exporter-otlp', version: '1.7.1'
+
+    // https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-grpc-1.6
+    implementation group: 'io.opentelemetry.instrumentation', name: 'opentelemetry-grpc-1.6', version: '1.7.1-alpha'
 
     // Testing.
     testImplementation "io.grpc:grpc-testing:${grpcVersion}"
