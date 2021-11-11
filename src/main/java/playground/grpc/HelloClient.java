@@ -12,13 +12,13 @@ import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.baggage.Baggage;
 import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.context.propagation.ContextPropagators;
-import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
+import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.instrumentation.grpc.v1_6.GrpcTracing;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
-import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -194,15 +194,19 @@ public class HelloClient {
 
     public static void main(String[] args) throws Exception {
         SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
+                /* Should you want to export the collected spans, uncomment this bit.
                 .addSpanProcessor(BatchSpanProcessor.builder(OtlpGrpcSpanExporter.builder().build())
                         .setMaxExportBatchSize(1)
                         .setMaxQueueSize(1)
-                        .build())
+                        .build())*/
                 .build();
 
         OpenTelemetrySdk.builder()
                 .setTracerProvider(sdkTracerProvider)
-                .setPropagators(ContextPropagators.create(W3CBaggagePropagator.getInstance()))
+                .setPropagators(ContextPropagators.create(TextMapPropagator.composite(
+                        W3CBaggagePropagator.getInstance(),
+                        W3CTraceContextPropagator.getInstance()
+                )))
                 .buildAndRegisterGlobal();
 
         HelloClient client = new HelloClient("localhost", HelloServerOptions.DEFAULT_SERVER_PORT);
@@ -213,6 +217,7 @@ public class HelloClient {
 
         try (Scope scope = span.makeCurrent()) {
             Baggage.current().toBuilder().put("BAGGAGE_TEST", "AAA").build().makeCurrent();
+            System.out.println("CLIENT TRACE_ID: " + Span.current().getSpanContext().getTraceId());
             client.successfulBlockingRequest();
         } finally {
             span.end();

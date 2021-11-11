@@ -10,11 +10,13 @@ import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import io.opentelemetry.api.baggage.Baggage;
+import io.opentelemetry.api.trace.Span;
 
 public class HelloServerImpl extends HelloGrpc.HelloImplBase {
 
     @Override
     public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
+        System.out.println("SERVER TRACE_ID: " + Span.current().getSpanContext().getTraceId());
         System.out.println("BAGGAGE_TEST: " + Baggage.current().getEntryValue("BAGGAGE_TEST"));
 
         // We require that the client tells us their name. If they
