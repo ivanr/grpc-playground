@@ -53,7 +53,7 @@ Two versions, beware. There are two versions of protocol buffers; the older v2 a
 - Protobuf doesn't serialise NULL values. It's not possible to set any field to null. You will never get a null field. Always check for presence. Nullable types have to be explicitly created with `oneof`.
 https://itnext.io/protobuf-and-null-support-1908a15311b6
 
-- Scalar fields have default values, which they take if the field is not in the message. This matches the behaviour of primitive values in many languages, but also makes interoperability with JSON tricky (such fields will not appear in JSON).
+- All fields have default values, which they take if the field is not in the message. This matches the behaviour of primitive values in many languages, but also makes interoperability with JSON tricky (such fields will not appear in JSON; some platforms support export of default values).
 
 - Optional fields are supported since 3.15. The only difference is that optional fields can, like messages, be checked for presence. This is how it's implemented behind the scenes:
   ```
@@ -69,6 +69,9 @@ https://itnext.io/protobuf-and-null-support-1908a15311b6
   https://stackoverflow.com/questions/42622015/how-to-define-an-optional-field-in-protobuf-3
   - Direct link: https://github.com/protocolbuffers/protobuf/blob/v3.12.0/docs/field_presence.md
   - The Wire protobuf compiler works differently and will reuse Java primitive wrappers such as Integer, Float, etc. I am not sure we can use it because I don't think it supports gRPC with Java as target (only Kotlin). Given that "optional" appears to be on the way, perhaps that's the best approach to take.
+  - Validation:
+    - https://github.com/envoyproxy/protoc-gen-validate
+    - https://medium.com/teamdev-engineering/protobuf-validation-dda3e43fa70
 
 - Well-known types. In addition to the types in the core specification, Google defines a number of additional higher common data structures. For example, the built-in string cannot be null, but there is StringValue that can. There are types for all scalar values:
 https://developers.google.com/protocol-buffers/docs/reference/google.protobuf
@@ -126,6 +129,7 @@ https://github.com/akalini/grpcbridge In-process HTTP/JSON bridge for Java
 - https://github.com/Fadelis/grpcmock
 - https://github.com/tokopedia/gripmock
 - https://retroryan8080.gitlab.io/grpc-java-workshop/index.html
+- https://www.baeldung.com/grpcs-error-handling
 
 - Concurrency
     - https://netflixtechblog.medium.com/performance-under-load-3e6fa9a60581
