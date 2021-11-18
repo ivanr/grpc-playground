@@ -137,7 +137,9 @@ https://github.com/akalini/grpcbridge In-process HTTP/JSON bridge for Java
   - https://grpc.github.io/grpc-java/javadoc/io/grpc/netty/NettyServerBuilder.html#maxConcurrentCallsPerConnection-int-
   - https://github.com/resilience4j/resilience4j
 
-- Field masks
+- Field masks / FieldMask
   - Covered in this video https://dev.tube/video/F2WYEFLTKEw
   - https://pinkiepractices.com/posts/protobuf-field-masks/
   - https://github.com/grpc/grpc-java/blob/master/examples/src/test/java/io/grpc/examples/helloworld/HelloWorldClientTest.java 
+  - https://netflixtechblog.com/practical-api-design-at-netflix-part-1-using-protobuf-fieldmask-35cfdc606518
+  - https://netflixtechblog.com/practical-api-design-at-netflix-part-2-protobuf-fieldmask-for-mutation-operations-2e75e1d230e4
