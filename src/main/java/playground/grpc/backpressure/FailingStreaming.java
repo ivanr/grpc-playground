@@ -11,22 +11,22 @@ import playground.grpc.StreamingServiceGrpc;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class FailingStreaming {
 
-    private static final Executor EXECUTOR = Executors.newSingleThreadExecutor();
-    private Server server;
+    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
+    private static Server server;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        FailingStreaming streamingServer = new FailingStreaming();
-        streamingServer.startServer();
+        startServer();
 
         EXECUTOR.execute(FailingStreaming::startClient);
 
-        streamingServer.blockUntilShutdown();
+        blockUntilShutdown();
+        EXECUTOR.shutdown();
     }
 
     @SneakyThrows
@@ -44,24 +44,24 @@ public class FailingStreaming {
         }
     }
 
-    private void startServer() throws IOException {
+    private static void startServer() throws IOException {
         server = ServerBuilder.forPort(50000).addService(new NoBackpressureStreamingServiceImpl()).build().start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                FailingStreaming.this.stopServer();
+                FailingStreaming.stopServer();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }));
     }
 
-    private void stopServer() throws InterruptedException {
+    private static void stopServer() throws InterruptedException {
         if (server != null) {
             server.shutdown().awaitTermination(30, TimeUnit.SECONDS);
         }
     }
 
-    private void blockUntilShutdown() throws InterruptedException {
+    private static void blockUntilShutdown() throws InterruptedException {
         if (server != null) {
             server.awaitTermination();
         }
