@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "playground.grpc";
+
+package playground.grpc;
+
+service StreamingService {
+  rpc StreamingMethod(StreamingRequest) returns (stream StreamingResponse);
+}
+
+message StreamingRequest {
+}
+
+message StreamingResponse {
+  int32 random_id = 1;
+}
