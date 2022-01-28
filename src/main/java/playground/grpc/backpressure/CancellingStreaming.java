@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class SuccessfulStreaming {
+public class CancellingStreaming {
 
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
     private static Server server;
@@ -24,7 +24,7 @@ public class SuccessfulStreaming {
     public static void main(String[] args) throws IOException, InterruptedException {
         startServer();
 
-        EXECUTOR.execute(SuccessfulStreaming::startClient);
+        EXECUTOR.execute(CancellingStreaming::startClient);
 
         blockUntilShutdown();
         EXECUTOR.shutdown();
@@ -37,22 +37,34 @@ public class SuccessfulStreaming {
 
         ClientResponseObserver<StreamingRequest, StreamingResponse> clientResponseObserver =
                 new ClientResponseObserver<>() {
+
+                    private static final int TOTAL_RECEIVE = 20;
+
+                    private int received;
+                    private ClientCallStreamObserver<StreamingRequest> requestStream;
+
                     @Override
                     public void beforeStart(ClientCallStreamObserver<StreamingRequest> requestStream) {
+                        this.requestStream = requestStream;
                     }
 
                     @SneakyThrows
                     @Override
                     public void onNext(StreamingResponse response) {
                         System.out.println(response.getRandomId());
-                        Thread.sleep(500);
+                        received++;
+                        if (received < TOTAL_RECEIVE) {
+                            Thread.sleep(500);
+                        } else {
+                            requestStream.cancel("Stop sending messages", null);
+                            Thread.sleep(5000);
+                            stopServer();
+                        }
                     }
 
-                    @SneakyThrows
                     @Override
                     public void onError(Throwable t) {
                         t.printStackTrace();
-                        stopServer();
                     }
 
                     @SneakyThrows
@@ -69,7 +81,7 @@ public class SuccessfulStreaming {
         server = ServerBuilder.forPort(50000).addService(new BackpressureStreamingServiceImpl()).build().start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                SuccessfulStreaming.stopServer();
+                CancellingStreaming.stopServer();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -12,6 +12,8 @@ import playground.grpc.StreamingServiceGrpc;
  */
 public class BackpressureStreamingServiceImpl extends StreamingServiceGrpc.StreamingServiceImplBase {
 
+    private static final int TOTAL_MESSAGES = 1_000_000;
+
     @Override
     public void streamingMethod(StreamingRequest request, StreamObserver<StreamingResponse> responseObserver) {
         // Convert response observer to ServerCallStreamObserver, so we can access additional API
@@ -28,12 +30,18 @@ public class BackpressureStreamingServiceImpl extends StreamingServiceGrpc.Strea
 
             @Override
             public void run() {
-                // isReady() method doesn't return false immediatelly after client stops requesting more messages.
-                // There is still some amount of buffering but will produce OutOfMemoryError.
-                while (serverCallStreamObserver.isReady()) {
+                // isReady() method doesn't return false immediately after client stops requesting more messages.
+                // There is still some amount of buffering but will not produce OutOfMemoryError.
+                while (serverCallStreamObserver.isReady() && !serverCallStreamObserver.isCancelled()
+                        && counter < TOTAL_MESSAGES) {
                     responseObserver.onNext(StreamingResponse.newBuilder().setRandomId(counter++).build());
+                }
+                if (counter >= TOTAL_MESSAGES && !serverCallStreamObserver.isCancelled()) {
+                    responseObserver.onCompleted();
                 }
             }
         });
+
+        serverCallStreamObserver.setOnCancelHandler(() -> System.out.println("Stream canceled"));
     }
 }

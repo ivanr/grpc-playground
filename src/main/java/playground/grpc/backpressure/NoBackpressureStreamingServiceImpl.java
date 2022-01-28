@@ -15,12 +15,20 @@ import java.util.Random;
  */
 public class NoBackpressureStreamingServiceImpl extends StreamingServiceGrpc.StreamingServiceImplBase {
 
+    private static final int TOTAL_MESSAGES = 1_000_000_000;
+
     private final Random random = new Random();
 
     @Override
     public void streamingMethod(StreamingRequest request, StreamObserver<StreamingResponse> responseObserver) {
-        while (true) {
-            responseObserver.onNext(StreamingResponse.newBuilder().setRandomId(random.nextInt()).build());
+        try {
+            for (int i = 0; i < TOTAL_MESSAGES; i++) {
+                responseObserver.onNext(StreamingResponse.newBuilder().setRandomId(random.nextInt()).build());
+            }
+            responseObserver.onCompleted();
+        } catch (OutOfMemoryError e) {
+            e.printStackTrace();
+            responseObserver.onError(e);
         }
     }
 }
