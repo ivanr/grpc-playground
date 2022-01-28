@@ -28,8 +28,8 @@ public class BackpressureStreamingServiceImpl extends StreamingServiceGrpc.Strea
 
             @Override
             public void run() {
-                // isReady() method doesn't return false immediatelly after client stops requesting more messages.
-                // There is still some amount of buffering but will produce OutOfMemoryError.
+                // isReady() method doesn't return false immediately after client stops requesting more messages.
+                // There is still some amount of buffering but will not produce OutOfMemoryError.
                 while (serverCallStreamObserver.isReady()) {
                     responseObserver.onNext(StreamingResponse.newBuilder().setRandomId(counter++).build());
                 }
