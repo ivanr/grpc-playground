@@ -46,6 +46,8 @@ https://github.com/google/protobuf-gradle-plugin
 - Schema management
   - https://www.bugsnag.com/blog/libraries-for-grpc-services
   - https://medium.com/namely-labs/how-we-build-grpc-services-at-namely-52a3ae9e7c35
+- QuickBuffers (protocol buffers reimplementation in Java; faster, doesn't use reflection, less allocation, etc)
+  - https://github.com/HebiRobotics/QuickBuffers
 
 ## Protobuf Notes
 Two versions, beware. There are two versions of protocol buffers; the older v2 and the newer v3. We want to use the latter. In v3, there are no required fields (despite what the example on the homepage shows). At the time of writing, tutorials are available only for v2, so better to stick with the reference.
