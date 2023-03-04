@@ -88,8 +88,12 @@ https://robertsahlin.com/schema-evolution-in-streaming-dataflow-jobs-and-bigquer
 https://medium.com/@akhaku/protobuf-definition-best-practices-87f281576f31
 
 ## gRPC
+
 - Google’s API Design Guide
 https://cloud.google.com/apis/design/
+
+- Google's API Improvement Proposals
+https://google.aip.dev/
 
 - HTTP REST API mapping
 https://cloud.google.com/service-management/reference/rpc/google.api#http
