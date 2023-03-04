@@ -6,7 +6,7 @@ plugins {
 
     // https://plugins.gradle.org/plugin/com.google.protobuf
     // https://github.com/google/protobuf-gradle-plugin
-    id 'com.google.protobuf' version '0.8.17'
+    id 'com.google.protobuf' version '0.9.2'
 
     // https://docs.gradle.org/current/userguide/idea_plugin.html
     id 'idea'
@@ -23,8 +23,8 @@ repositories {
     mavenCentral()
 }
 
-def grpcVersion = '1.41.0'
-def protobufVersion = '3.18.1'
+def grpcVersion = '1.52.1'
+def protobufVersion = '3.22.0'
 def protocVersion = protobufVersion
 
 dependencies {
