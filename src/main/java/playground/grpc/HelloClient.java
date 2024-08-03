@@ -16,7 +16,7 @@ import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
-import io.opentelemetry.instrumentation.grpc.v1_6.GrpcTracing;
+import io.opentelemetry.instrumentation.grpc.v1_6.GrpcTelemetry;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 
@@ -57,11 +57,12 @@ public class HelloClient {
         // specify deadlines, otherwise something may go wrong and the calls
         // will take forever.
 
+        GrpcTelemetry grpcTelemetry = GrpcTelemetry.create(GlobalOpenTelemetry.get());
+
         this.blockingStub = HelloGrpc.newBlockingStub(channel)
                 .withCallCredentials(callCredentials)
                 .withDeadlineAfter(1000, TimeUnit.MILLISECONDS)
-                .withInterceptors(GrpcTracing.newBuilder(GlobalOpenTelemetry.get()).build()
-                        .newClientInterceptor());
+                .withInterceptors(grpcTelemetry.newClientInterceptor());
 
         this.asyncStub = HelloGrpc.newStub(channel)
                 .withCallCredentials(callCredentials)
