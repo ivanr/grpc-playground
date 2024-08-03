@@ -31,10 +31,10 @@ dependencies {
 
     // Core gRPC libraries.
     implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-services:${grpcVersion}"
     implementation "io.grpc:grpc-stub:${grpcVersion}"
-    implementation "io.grpc:grpc-inprocess:${grpcVersion}"
 
-    // Fix to make annotations work; see https://github.com/grpc/grpc-java/issues/6833
+    // Fix to make the annotations work; see https://github.com/grpc/grpc-java/issues/6833
     compileOnly "org.apache.tomcat:annotations-api:6.0.53"
 
     // Various protobuf utilities, including marshalling to and from JSON.
@@ -42,6 +42,10 @@ dependencies {
 
     // Netty is used to run the gRPC server. This version relies on Java's TLS stack.
     implementation "io.grpc:grpc-netty:${grpcVersion}"
+
+    // Enable below to get better performance, per:
+    // https://stackoverflow.com/questions/58423401/guidelines-for-high-throughput-low-latency-unary-calls-in-grpc/58546457#58546457
+    // implementation "io.netty:netty-transport-native-epoll:${grpcVersion}"
 
     // Shaded Netty includes a TLS stack based on BoringSSL, but it's heavier (7 MB versus 300 KB).
     //runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
@@ -61,6 +65,7 @@ dependencies {
     // Testing.
 
     testImplementation "io.grpc:grpc-testing:${grpcVersion}"
+    testImplementation "io.grpc:grpc-inprocess:${grpcVersion}"
 
     // https://mvnrepository.com/artifact/junit/junit
     testImplementation "junit:junit:4.13.2"

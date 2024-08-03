@@ -57,6 +57,9 @@ public class HelloServer {
                 .addService(ServerInterceptors.intercept(
                         new HelloServerImpl(),
                         new BasicAuthServerInterceptor()))
+                // TODO The default executor doesn't provide optimal performance,
+                //      which is why it's generally recommended to configure your own.
+                // .executor()
                 .build().start();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
