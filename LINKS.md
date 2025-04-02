@@ -84,8 +84,12 @@ https://developers.google.com/protocol-buffers/docs/reference/google.protobuf
 https://developers.google.com/protocol-buffers/docs/reference/java/com/google/protobuf/util/JsonFormat
 
 - Maybe Useful
-https://robertsahlin.com/schema-evolution-in-streaming-dataflow-jobs-and-bigquery-tables-part-1/
-https://medium.com/@akhaku/protobuf-definition-best-practices-87f281576f31
+  - https://robertsahlin.com/schema-evolution-in-streaming-dataflow-jobs-and-bigquery-tables-part-1/
+  - https://medium.com/@akhaku/protobuf-definition-best-practices-87f281576f31
+
+- Any, JSON, TypeRegistry
+  - https://blog.teamdev.com/protobuf-whats-in-it-for-your-project-5237c41154fb
+  - https://codeburst.io/protocol-buffers-part-3-json-format-e1ca0af27774
 
 ## gRPC
 
